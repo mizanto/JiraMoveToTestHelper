@@ -49,13 +49,18 @@ def moveTasksToTest(version, build):
     assignee = 'assignee={0}'.format(CURRENT_USER) #на ком таска
     issues = jira.search_issues(assignee)
 
+    print('\n')
     for issue in issues:
         if issue.fields.status.name in(u'READY TO MERGE'):
-            print(issue.key.encode("utf-8"), issue.fields.summary.encode("utf-8"), issue.fields.status.encode("utf-8"))
+            print('Task: %s' % issue.key.encode('utf-8','ignore'))
+            print('Summary: %s' % issue.fields.summary.encode('utf-8','replace'))
+            print('Status: %s\n' % issue.fields.status)
             fixedInMsg = 'fixed in ' + version + ' ' + fixedInBuild
             comment = jira.add_comment(issue.key, fixedInMsg)
             jira.transition_issue(issue, transition='Ready for test')
             jira.assign_issue(issue, TARGET_USER)
+
+    print('Success!')
 
 
 version, build = getVersionAndBuild(sys.argv[1:])
