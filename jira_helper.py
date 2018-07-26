@@ -44,7 +44,9 @@ def moveTasksToTest(version, build):
 
     options = { 'server': SERVER }
     jira = JIRA(options, basic_auth=(CURRENT_USER, PASSWORD)) # a username/password tuple
-    print(jira)
+    print('INFO -> jira: %s' % jira.client_info())
+    print('INFO -> current_user: %s' % CURRENT_USER)
+    print('INFO -> target_user: %s' % TARGET_USER)
 
     assignee = 'assignee={0}'.format(CURRENT_USER) #на ком таска
     issues = jira.search_issues(assignee)
@@ -52,15 +54,15 @@ def moveTasksToTest(version, build):
     print('\n')
     for issue in issues:
         if issue.fields.status.name in(u'READY TO MERGE'):
-            print('Task: %s' % issue.key.encode('utf-8','ignore'))
-            print('Summary: %s' % issue.fields.summary.encode('utf-8','replace'))
-            print('Status: %s\n' % issue.fields.status)
+            print('INFO -> Task: %s' % issue.key.encode('utf-8','ignore'))
+            print('INFO -> Summary: %s' % issue.fields.summary.encode('utf-8','replace'))
+            print('INFO -> Status: %s\n' % issue.fields.status)
             fixedInMsg = 'fixed in ' + version + ' ' + fixedInBuild
             comment = jira.add_comment(issue.key, fixedInMsg)
             jira.transition_issue(issue, transition='Ready for test')
             jira.assign_issue(issue, TARGET_USER)
 
-    print('Success!')
+    print('DEBUG -> Success!')
 
 
 version, build = getVersionAndBuild(sys.argv[1:])
